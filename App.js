@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -15,7 +15,7 @@ import {
   Text,
   StatusBar,
 } from 'react-native';
-
+import BackgroundGeolocation from 'react-native-background-geolocation';
 import {
   Header,
   LearnMoreLinks,
@@ -25,6 +25,26 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 const App: () => React$Node = () => {
+  useEffect(() => {
+    BackgroundGeolocation.ready({
+      desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+      distanceFilter: 50,
+      logLevel: BackgroundGeolocation.LOG_LEVEL_DEBUG,
+    })
+      .then((state) => {
+        console.log('- BackgroundGeolocation is ready: ', state);
+
+        if (!state.enabled) {
+          BackgroundGeolocation.start(function () {
+            console.log('- Start success');
+          });
+        }
+      })
+      .catch((error) => {
+        console.log('- BackgroundGeolocation error: ', error);
+      });
+  }, []);
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
